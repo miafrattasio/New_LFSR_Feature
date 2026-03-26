@@ -70,6 +70,7 @@ int main(void){
     int currentState = initialState;
     unsigned int output[16] = {0};
 
+    
     int period = 0;
 
     printf("%d\n\n" , currentState);  
