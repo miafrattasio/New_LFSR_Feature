@@ -1,3 +1,5 @@
+//NEED TO UPDATE BASED ON FRIDAY'S MEETING (Currently two tap vs amanda's addition/ + the 3 lfsr registers thing)
+
 #include <stdio.h>
 
 //summary:
