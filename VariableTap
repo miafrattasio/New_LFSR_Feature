@@ -8,7 +8,7 @@
 // when you run, the output bit is what the attacker would see, the rest is for our viewing
 
 
-// taps for 9-bit primitive polynomials
+// taps for 9-bit primitive polynomials (do these work lowk made them up)
 #define TAPS_A      0x110  // x^9 + x^5 + 1
 #define TAPS_B_ONE  0x120  // x^9 + x^6 + 1
 #define TAPS_B_ZERO 0x140  // x^9 + x^7 + 1
@@ -17,6 +17,7 @@
 // determines new bit that will be fed into the shift register
 // inputs take current state (bits currently in register) and the taps (positions that are wired together to created the feedback)
 // the XOR is the binary math, XORing a series of bits is like checking if the sum of 1s is even (0) or odd(1), and use % 2
+//Does this make sense? check this
 int getFeedback(int state, int taps) {
   int xorSum = 0;
   for (int i = 0; i < 9; i++) {
@@ -41,7 +42,7 @@ int main() {
   //with two registers, total key is 18 bits
   int stateA = 0b110101010; 
   int stateB = 0b101110001;
-  int iterations = 64; //need to pick a legnth?
+  int iterations = 64; //need to pick a legnth? random number
   
   printf("Cycle | LFSR1 Bit | Tap Used | LFSR2 State | Output Bit\n");
   printf("-------------------------------------------------------\n");
@@ -82,6 +83,7 @@ int main() {
 // ideas: https://ijcsmc.com/docs/papers/November2018/V7I11201826.pdf
 // https://www.cs.purdue.edu/homes/ninghui/courses/Fall05/lectures/355_Fall05_lect10.pdf
 // for this specific thing: https://ieeexplore.ieee.org/document/4470524
+// https://www.geeksforgeeks.org/computer-networks/stream-ciphers/
 // for code: https://www.geeksforgeeks.org/c/bitwise-operators-in-c-cpp/
 // https://www.geeksforgeeks.org/digital-logic/linear-feedback-shift-registers-lfsr/
 // https://www.ti.com/lit/an/scta036a/scta036a.pdf
