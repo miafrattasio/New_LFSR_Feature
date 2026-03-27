@@ -78,9 +78,11 @@ int main() {
     return 0;
 }
 
-// links: https://ijcsmc.com/docs/papers/November2018/V7I11201826.pdf
+//resources:
+// ideas: https://ijcsmc.com/docs/papers/November2018/V7I11201826.pdf
 // https://www.cs.purdue.edu/homes/ninghui/courses/Fall05/lectures/355_Fall05_lect10.pdf
 // for this specific thing: https://ieeexplore.ieee.org/document/4470524
 // for code: https://www.geeksforgeeks.org/c/bitwise-operators-in-c-cpp/
 // https://www.geeksforgeeks.org/digital-logic/linear-feedback-shift-registers-lfsr/
 // https://www.ti.com/lit/an/scta036a/scta036a.pdf
+// gemini for small code fixes / debugging (he said this was okay?)
