@@ -19,7 +19,7 @@
   
 #define TAPS_A      0b001101001  // 1 + x^3 + x^4 + x^6 + x^9
 #define TAPS_B_ONE  0b101101101  // 1 + x^1 + x^3 + x^4 + x^6 + x^7 + x^9
-#define TAPS_B_ZERO 0b010000111  // 1 + x^2 + x^7 + x^8 + x^9
+#define TAPS_B_ZERO 0b000100001  // 1 + x^4 x^9
 
 #define LFSR_LENGTH 9 
 
@@ -95,12 +95,17 @@ int main() {
 
 void clockCycle(int *stateA_ptr, int *stateB_ptr){
 
+  static int cycles = 0;
+
   int stateA = *stateA_ptr;
-  int stateB = *stateA_ptr;
+  int stateB = *stateB_ptr;
 
 
   //controller/LFSR1
   int lfsr1Bit = getFeedback(stateA, TAPS_A);
+  
+  //for testing:
+  //int lfsr1Bit = 0;
   
   // Choose taps for lsfr2 based on the controller lfsr(lfsr1)
   //this is where the modification happens, rather than using one set of taps, use if else to swap the rules
@@ -115,20 +120,22 @@ void clockCycle(int *stateA_ptr, int *stateB_ptr){
   
   //ouput the values before shifting
   /*
-  printf("%5d |    %d     |  %s   |  ", i, lfsr1Bit, tapName);
+  printf("%5d |    %d     |  %s   |  ", cycles, lfsr1Bit, tapName);
   printBinary(stateB);
   printf("  |    %d\n", lfsr2Bit);
   */
 
-  printf("%d", lfsr1Bit);
+  printf("%d ", lfsr2Bit);
   
   //shift and update the states
   // stateA >> 1 means to shift all bits one position to the right (Which drops oldest bit?)
-  //lfsr1Bit << 8 means to take the new feedback bit and move to 9th position (far most left pos)
+  // lfsr1Bit << 8 means to take the new feedback bit and move to 9th position (far most left pos)
   // the OR combines the shifted state with the new bit
-  //& 0x1FF- that is binary 111111111, this is here to ensure that if any bits shifted past the 9th, they are dropped, keeping 9 bits
-  *stateA_ptr = ((stateA >> 1) | (lfsr1Bit << 8)) & 0x1FF;
-  *stateB_ptr = ((stateB >> 1) | (lfsr2Bit << 8)) & 0x1FF;
+  // & 0x1FF- that is binary 111111111, this is here to ensure that if any bits shifted past the 9th, they are dropped, keeping 9 bits
+  *stateA_ptr = ((stateA >> 1) | (lfsr1Bit << 8)) & 0b111111111;
+  *stateB_ptr = ((stateB >> 1) | (lfsr2Bit << 8)) & 0b111111111;
+
+  cycles ++;
 
 }
 
