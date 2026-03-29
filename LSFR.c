@@ -56,11 +56,11 @@ void U32_0B_print (unsigned int number);
 
 int main(void){
 
-    const int ITERATIONS = 512;
+    const int ITERATIONS = 511;
     const unsigned int P = 0b111011000001101110110100111110;
 
-    int initialState  = 0b000110100;
-    int gatePositions = 0b101000011;
+    int initialState  = 0b110101010;
+    int gatePositions = 0b001101001;
 
     //int m_gatePositions = gatePositions;
 
@@ -98,7 +98,7 @@ int main(void){
             printf("%d - %d\n", outputBit, currentState); 
 
             if (outputBit == 1){
-                SetBit(output, i, 512);
+                SetBit(output, i, 511);
             }
 
             // check if it's the end of the period
@@ -114,7 +114,7 @@ int main(void){
 
                     if (GetBit(output, j) == 1){
                         //printf("bit %d is a 1", j);
-                        SetBit(output, j+period, 512);
+                        /////SetBit(output, j+period, 512);
                     }
 
                 }
