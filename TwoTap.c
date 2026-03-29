@@ -70,18 +70,23 @@ void printBinary(int n);
 
 
 int main() {
+
+
+
   //Initial seeds/secret keys
   //if we start with all 0's, feedback with always be 0, register will be stuck
   //with two registers, total key is 18 bits
   int stateA = 0b110101010; 
   int stateB = 0b101110001;
-
-
-  int iterations = 511; //need to pick a legnth? random number
   
   printf("Cycle | LFSR1 Bit | Tap Used | LFSR2 State | Output Bit\n");
   printf("-------------------------------------------------------\n");
   
+
+  // we just need a bunch of clock cycles for now, this number can be changed later 
+  // it's currently set to the LFSR1 maximum period
+  int iterations = 511; 
+
   for (int i = 0; i < iterations; i++) {
 
     clockCycle(&stateA, &stateB);
