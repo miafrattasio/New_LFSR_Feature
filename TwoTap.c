@@ -1,5 +1,3 @@
-//NEED TO UPDATE BASED ON FRIDAY'S MEETING (Currently two tap vs amanda's addition/ + the 3 lfsr registers thing)
-
 #include <stdio.h>
 
 //summary:
@@ -17,9 +15,9 @@
       // actually we should do ~64 bits, but that would require some extra trickiness that isn't needed if we stay within 32 bits
       // at least for the B-taps
 
-#define TAPS_A      0b001101001  // 1 + x^3 + x^4 + x^6 + x^9
-#define TAPS_B_ONE  0b101101101  // 1 + x^1 + x^3 + x^4 + x^6 + x^7 + x^9
-#define TAPS_B_ZERO 0b000100001  // 1 + x^4 x^9
+#define LFSR_1_GATE   0b001101001  // 1 + x^3 + x^4 + x^6 + x^9
+#define LFSR2_GATE_A  0b101101101  // 1 + x^1 + x^3 + x^4 + x^6 + x^7 + x^9
+#define LFSR2_GATE_B  0b000100001  // 1 + x^4 x^9
 
 #define LFSR_LENGTH 9 
 
@@ -37,7 +35,7 @@ modifies:
   the integers pointed to by the inputs
 
 */
-void clockCycle(int *stateA_ptr, int *stateB_ptr);
+void clockCycle(int *lfsr1_state_ptr, int *lfsr2_state_ptr);
 
 /*
 int getFeedback(int state, int taps)
@@ -55,15 +53,17 @@ int getFeedback(int state, int taps)
 int getFeedback(int state, int taps);
 
 /*
-void printBinary(int n)
+void printBinary(int n, int bits)
 
-prints the first N bits of the binary representation of an integer,
-where N = LFSR_LENGTH
+prints the first bits of the binary representation of an integer,
+for printing LFSRs, 'bits' is the length of the LFSR (# of registers)
 
 inputs:
   n : an integer
+  bits: in integer
+
 */
-void printBinary(int n);
+void printBinary(int n, int bits);
 
 
 
@@ -76,8 +76,8 @@ int main() {
   //Initial seeds/secret keys
   //if we start with all 0's, feedback with always be 0, register will be stuck
   //with two registers, total key is 18 bits
-  int stateA = 0b110101010; 
-  int stateB = 0b101110001;
+  int lfsr1_state = 0b110101010; 
+  int lfsr2_state = 0b101110001;
   
   printf("Cycle | LFSR1 Bit | Tap Used | LFSR2 State | Output Bit\n");
   printf("-------------------------------------------------------\n");
@@ -89,7 +89,7 @@ int main() {
 
   for (int i = 0; i < iterations; i++) {
 
-    clockCycle(&stateA, &stateB);
+    clockCycle(&lfsr1_state, &lfsr2_state);
 
   }
     return 0;
@@ -99,31 +99,32 @@ int main() {
 
 
 
-void clockCycle(int *stateA_ptr, int *stateB_ptr){
+void clockCycle(int *lfsr1_state_ptr, int *lfsr2_state_ptr){
 
   static int cycles = 0;
 
-  int stateA = *stateA_ptr;
-  int stateB = *stateB_ptr;
+  int lfsr1_state = *lfsr1_state_ptr;
+  int lfsr2_state = *lfsr2_state_ptr;
 
 
   //controller/LFSR1
-  int lfsr1Bit = getFeedback(stateA, TAPS_A);
+  int lfsr1Bit = getFeedback(lfsr1_state, LFSR_1_GATE);
   
   // Choose taps for lsfr2 based on the controller lfsr(lfsr1)
   //this is where the modification happens, rather than using one set of taps, use if else to swap the rules
   // if the controller/lfsr1 outputs 1, lfsr2 uses taps b 1
   // if the controller/lfsr1 outputs 0, lfsr2 uses taps b 0
   //rewires lfsr2 on every clock cycle
-  int currentTaps = (lfsr1Bit == 1) ? TAPS_B_ONE : TAPS_B_ZERO;
-  char* tapName = (lfsr1Bit == 1) ? "a" : "b";
+  int currentTaps = (lfsr1Bit == 1) ? LFSR2_GATE_A : LFSR2_GATE_B;
+  char* tapName = (lfsr1Bit == 1) ? "A" : "B";
   
   //lfsr using selected taps
-  int lfsr2Bit = getFeedback(stateB, currentTaps);
+  int lfsr2Bit = getFeedback(lfsr2_state, currentTaps);
   
   //ouput the values before shifting
   printf("%5d |    %d     |  %s   |  ", cycles, lfsr1Bit, tapName);
-  printBinary(stateB);
+  //!!! change this to 31 when you update LFSR2 to 31 bits
+  printBinary(lfsr2_state, 9);
   printf("  |    %d\n", lfsr2Bit);
   
   //shift and update the states
@@ -131,8 +132,8 @@ void clockCycle(int *stateA_ptr, int *stateB_ptr){
   // lfsr1Bit << 8 means to take the new feedback bit and move to 9th position (far most left pos)
   // the OR combines the shifted state with the new bit
   // & 0x1FF- that is binary 111111111, this is here to ensure that if any bits shifted past the 9th, they are dropped, keeping 9 bits
-  *stateA_ptr = ((stateA >> 1) | (lfsr1Bit << (LFSR_LENGTH-1))) & 0b111111111;
-  *stateB_ptr = ((stateB >> 1) | (lfsr2Bit << (LFSR_LENGTH-1))) & 0b111111111;
+  *lfsr1_state_ptr = ((lfsr1_state >> 1) | (lfsr1Bit << (LFSR_LENGTH-1))) & 0b111111111;
+  *lfsr2_state_ptr = ((lfsr2_state >> 1) | (lfsr2Bit << (LFSR_LENGTH-1))) & 0b111111111;
 
   cycles ++;
 
@@ -154,8 +155,8 @@ int getFeedback(int state, int taps) {
   return xorSum % 2; 
 }
 
-void printBinary(int n){
-  for (int i = LFSR_LENGTH-1; i >= 0; i--) {
+void printBinary(int n, int bits){
+  for (int i = bits-1; i >= 0; i--) {
     printf("%d", (n >> i) & 1);
   }
 }
