@@ -119,13 +119,13 @@ void clockCycle(int *stateA_ptr, int *stateB_ptr){
   int lfsr2Bit = getFeedback(stateB, currentTaps);
   
   //ouput the values before shifting
-  /*
+  
   printf("%5d |    %d     |  %s   |  ", cycles, lfsr1Bit, tapName);
   printBinary(stateB);
   printf("  |    %d\n", lfsr2Bit);
-  */
+  
 
-  printf("%d ", lfsr2Bit);
+  //printf("%d ", lfsr2Bit);
   
   //shift and update the states
   // stateA >> 1 means to shift all bits one position to the right (Which drops oldest bit?)
