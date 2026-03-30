@@ -19,8 +19,6 @@
 #define LFSR2_GATE_A  0b101101101  // 1 + x^1 + x^3 + x^4 + x^6 + x^7 + x^9
 #define LFSR2_GATE_B  0b000100001  // 1 + x^4 x^9
 
-//#define LFSR_LENGTH 9 
-
 
 /**
  * void clockCycle(int *stateA_ptr, int *stateB_ptr)
@@ -85,6 +83,22 @@ int getFeedback(int state, int taps, int length);
 void printBinary(int n, int bits);
 
 
+/**
+ * void assignGate(int *m_gate_ptr, int length, int *state_ptr, int gate)
+ * 
+ * uses a given 9-bit LFSR to generate a new gate for another LFSR (of any length)
+ * 
+ * inputs:
+ *   int *m_gate_ptr: a gate that need to be modified/updated
+ *   int length: the number of bits in the gate being changed
+ *   int *state: the current state of an LFSR
+ *   int gate: the current gates of an LFSR
+ * 
+ * modifies:
+ *  the state that state_ptr points to
+ *  the gate that m_gate_ptr points to
+ */
+void assignGate(int *m_gate_ptr, int length, int *state_ptr, int gate);
 
 
 
@@ -92,14 +106,31 @@ int main() {
   // Initial seeds/secret keys
   // if we start with all 0's, feedback with always be 0, register will be stuck
   // Total key is 36 "Truly Random" Bits.
-  int lfsr1_state = 0b110101010; 
-  int lfsr2_state = 0b101110001;
-  int lsfr3_state = 0b010011001;
-  int lsfr3_gate  = 0b110001101;
+  int LFSR1_INITIAL_STATE = 0b110101010; 
+  int LFSR2_INITIAL_STATE = 0b101110001;
+  int LFSR3_INITIAL_STATE = 0b010011001;
+  int lfsr3_gate  = 0b110001101;
 
 
-  int lsfr3_gate2;
+  // creating variables for the states and gates for all of the lfsrs
+  int lfsr3_state = LFSR3_INITIAL_STATE;
+  int lfsr3_next_gate;
+
+  int lfsr1_state = LFSR1_INITIAL_STATE;
+  int lfsr1_gate;
+
+  int lfsr2_state = LFSR2_INITIAL_STATE;
+  int lfsr2_gateA;
+  int lfsr2_gateB;
+
+  // assigning the initial gates and states where applicable
+  assignGate(&lfsr3_next_gate, 9, &lfsr3_state, lfsr3_gate);
+  assignGate(&lfsr1_gate, 9, &lfsr3_state, lfsr3_gate);
+  assignGate(&lfsr2_gateA, 31, &lfsr3_state, lfsr3_gate);
+  assignGate(&lfsr2_gateB, 31 , &lfsr3_state, lfsr3_gate);
   
+
+  // and go!
   printf("Cycle | LFSR1 Bit | Tap Used | LFSR2 State | Output Bit\n");
   printf("-------------------------------------------------------\n");
   
@@ -111,6 +142,26 @@ int main() {
   for (int i = 0; i < iterations; i++) {
 
     clockCycle(&lfsr1_state, &lfsr2_state);
+
+    // if lfsr1 has reached a state that could repeat, swap it out
+    if (lfsr1_state == LFSR1_INITIAL_STATE){
+      assignGate(&lfsr1_gate, 9, &lfsr3_state, lfsr3_gate);
+    }
+    // if lfsr 2 has reached a state that could repeat, swap out both sets of gates
+    if (lfsr2_state == LFSR2_INITIAL_STATE){
+        assignGate(&lfsr2_gateA, 31, &lfsr3_state, lfsr3_gate);
+        assignGate(&lfsr2_gateB, 31 , &lfsr3_state, lfsr3_gate);
+    }
+    // if lfsr 2 has reached a state that will repeat, swap out both sets of gates
+    // if it starts looping, that's not the end of the world, because the bits are being divided up so weirdly
+    // between various LFSRs. If it lands cleanly on a repetition, reset it regardless.
+    if (lfsr3_state == LFSR3_INITIAL_STATE){
+      lfsr3_gate = lfsr3_next_gate;
+      LFSR3_INITIAL_STATE = lfsr3_gate;
+
+      assignGate(&lfsr3_next_gate, 9, &lfsr3_state, lfsr3_gate);
+    }
+
 
   }
 
@@ -192,6 +243,20 @@ void printBinary(int n, int bits){
   }
 }
 
+void assignGate(int *m_gate_ptr, int length, int *state_ptr, int gate){
+
+  int newGate = 0;
+
+  for(int i = 0; i < length; i++){
+
+    int nextBit = advance(state_ptr, gate, 9);
+
+    newGate = newGate | (nextBit << i);
+  }
+
+  *m_gate_ptr = newGate;
+
+}
 
 
 //resources:
