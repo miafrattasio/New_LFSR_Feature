@@ -14,18 +14,23 @@ LFSR 1 acts as the controller and signals which taps the other LFSRs should use.
 
 **How to run:** ./TwoTap.exe
 
-**Resources:**
-For Ideas:
-*https://ijcsmc.com/docs/papers/November2018/V7I11201826.pdf
-*https://www.cs.purdue.edu/homes/ninghui/courses/Fall05/lectures/355_Fall05_lect10.pdf
-*https://ieeexplore.ieee.org/document/4470524
-*https://www.geeksforgeeks.org/computer-networks/stream-ciphers/
-*https://www.partow.net/programming/polynomials/index.html#deg31
+**Resources:**     
 
-For Code:
-*https://www.geeksforgeeks.org/c/bitwise-operators-in-c-cpp/
-*https://www.geeksforgeeks.org/digital-logic/linear-feedback-shift-registers-lfsr/
-*https://www.ti.com/lit/an/scta036a/scta036a.pdf
-*Gemini for small code fixes / debugging 
+For Ideas:
+
+* https://ijcsmc.com/docs/papers/November2018/V7I11201826.pdf
+* https://www.cs.purdue.edu/homes/ninghui/courses/Fall05/lectures/355_Fall05_lect10.pdf
+* https://ieeexplore.ieee.org/document/4470524
+* https://www.geeksforgeeks.org/computer-networks/stream-ciphers/
+* https://www.partow.net/programming/polynomials/index.html#deg31
+
+
+
+For Code:     
+
+* https://www.geeksforgeeks.org/c/bitwise-operators-in-c-cpp/
+* https://www.geeksforgeeks.org/digital-logic/linear-feedback-shift-registers-lfsr/
+* https://www.ti.com/lit/an/scta036a/scta036a.pdf
+* Gemini for small code fixes / debugging 
 
 
