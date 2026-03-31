@@ -1,19 +1,18 @@
 #include <stdio.h>
 
 //summary:
-//read the current states
-// controller/LFSR1 decides the mode (LFSR2 a or b)
-// lfsr2 calulcates the output based on that
-// both registers shift to prepare for next cycle
-// when you run, the output bit is what the attacker would see, the rest is for our viewing
+// Read the current states
+// Controller/LFSR 1 decides the mode (LFSR2 taps a or b)
+// LFSR 2 calulcates the output based on that
+// Both registers shift to prepare for next cycle
+// LFSR3 gives new gates to LFSRs 1 and 2 when they've reached their period
 
 
 // taps for 9-bit primitive polynomials
-    // a 9-bit LFSR is described by an 9th degree polynomial (you ignore the +1 I guess, that was messing with me)
-    // I've changed these so that they are known 9th degree primitives
-    // we should consider changing these to be 32 bits. 
-      // actually we should do ~64 bits, but that would require some extra trickiness that isn't needed if we stay within 32 bits
-      // at least for the B-taps
+    // A 9-bit LFSR is described by an 9th degree polynomial (you ignore the +1 I guess, that was messing with me)
+    // These are known 9th degree primitives
+    // Could be changed to be 32 bits. 
+      // But, we should do ~64 bits, but that would require some extra trickiness that isn't needed if we stay within 32 bits, at least for the B-taps
 
 #define LFSR_1_GATE   0b001101001  // 1 + x^3 + x^4 + x^6 + x^9
 #define LFSR2_GATE_A  0b101101101  // 1 + x^1 + x^3 + x^4 + x^6 + x^7 + x^9
@@ -184,10 +183,10 @@ void clockCycle(int *lfsr1_state_ptr, int *lfsr2_state_ptr){
   int lfsr1Bit = getFeedback(lfsr1_state, LFSR_1_GATE, 9);
   
   // Choose taps for lsfr2 based on the controller lfsr(lfsr1)
-  //this is where the modification happens, rather than using one set of taps, use if else to swap the rules
+  // this is where the modification happens, rather than using one set of taps, use if else to swap the rules
   // if the controller/lfsr1 outputs 1, lfsr2 uses taps b 1
   // if the controller/lfsr1 outputs 0, lfsr2 uses taps b 0
-  //rewires lfsr2 on every clock cycle
+  // rewires lfsr2 on every clock cycle
   int currentTaps = (lfsr1Bit == 1) ? LFSR2_GATE_A : LFSR2_GATE_B;
   char* tapName = (lfsr1Bit == 1) ? "A" : "B";
   
@@ -200,7 +199,7 @@ void clockCycle(int *lfsr1_state_ptr, int *lfsr2_state_ptr){
   printBinary(lfsr2_state, 9);
   printf("  |    %d\n", lfsr2Bit);
   
-  //shift and update the states
+  // shift and update the states
   // stateA >> 1 means to shift all bits one position to the right (Which drops rightmost bit)
   // lfsr1Bit << 8 means to take the new feedback bit and move to 9th position (far most left pos, in a 9-bit LFSR)
   // the OR combines the shifted state with the new bit
@@ -273,4 +272,4 @@ void assignGate(int *m_gate_ptr, int length, int *state_ptr, int gate){
 // https://www.geeksforgeeks.org/digital-logic/linear-feedback-shift-registers-lfsr/
 
 // https://www.ti.com/lit/an/scta036a/scta036a.pdf
-// gemini for small code fixes / debugging (he said this was okay?)
+// gemini for small code fixes / debugging 
