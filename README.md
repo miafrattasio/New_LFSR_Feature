@@ -12,7 +12,7 @@ LFSR 1 acts as the controller and signals which taps the other LFSRs should use.
 
 **Complexity:** This system is non-linear, with a much longer period that allows for a larger output for a small amount of bits. 
 
-**How to run:** ./TwoTap.exe
+**How to run:** ./TwoTap.exe (Note: This GitHub holds both our normal LFSR code and our Two Tap Plus code)
 
 **Resources:**     
 
