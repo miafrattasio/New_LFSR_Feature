@@ -1,4 +1,4 @@
-# New_LFSR: VariableTap
+# Two-Tap-plus
 **Team:** Mia Frattasio, Emma Herman, Felicia Moua, Amanda Robinson, Ryan Vernick
 
 **Problem:** A traditional LFSR has the Berklekamp-Massey vulnaurability, which allows attackers to reverse-engineer the LFSR's internal state from the reconstruction of the minimal polynomial.
