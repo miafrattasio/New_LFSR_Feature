@@ -15,6 +15,9 @@ LFSR 1 acts as the controller and signals which taps the other LFSRs should use.
 **How to compile** gcc -g -Wall TwoTap.c -o TwoTap
 
 **How to run:** ./TwoTap.exe
+=======
+**How to run:** ./TwoTap.exe (Note: This GitHub holds both our normal LFSR code and our Two Tap Plus code)
+>>>>>>> 36309cd2b8734d908538e87d3a0a0a4ac81f7d36
 
 **Resources:**     
 
