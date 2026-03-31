@@ -100,8 +100,13 @@ void printBinary(int n, int bits);
 void assignGate(int *m_gate_ptr, int length, int *state_ptr, int gate);
 
 
+FILE* output;
+
 
 int main() {
+
+  output = fopen("output.txt", "w");
+
   // Initial seeds/secret keys
   // if we start with all 0's, feedback with always be 0, register will be stuck
   // Total key is 36 "Truly Random" Bits.
@@ -136,7 +141,7 @@ int main() {
 
   // we just need a bunch of clock cycles for now, this number can be changed later 
   // it's currently set to the LFSR1 maximum period
-  int iterations = 511; 
+  int iterations = 10000; 
 
   for (int i = 0; i < iterations; i++) {
 
@@ -198,6 +203,11 @@ void clockCycle(int *lfsr1_state_ptr, int *lfsr2_state_ptr){
   //!!! change this to 31 when you update LFSR2 to 31 bits
   printBinary(lfsr2_state, 9);
   printf("  |    %d\n", lfsr2Bit);
+
+  fprintf(output, "%d", lfsr2Bit);
+  if (cycles % 100 == 99){
+    fprintf(output, "\n");
+  }
   
   // shift and update the states
   // stateA >> 1 means to shift all bits one position to the right (Which drops rightmost bit)

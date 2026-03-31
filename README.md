@@ -12,6 +12,8 @@ LFSR 1 acts as the controller and signals which taps the other LFSRs should use.
 
 **Complexity:** This system is non-linear, with a much longer period that allows for a larger output for a small amount of bits. 
 
+**How to compile** gcc -g -Wall TwoTap.c -o TwoTap
+
 **How to run:** ./TwoTap.exe
 
 **Resources:**     
