@@ -100,12 +100,12 @@ void printBinary(int n, int bits);
 void assignGate(int *m_gate_ptr, int length, int *state_ptr, int gate);
 
 
-FILE* output;
+FILE* outputFile;
 
 
 int main() {
 
-  output = fopen("output.txt", "w");
+  outputFile = fopen("output.txt", "w");
 
   // Initial seeds/secret keys
   // if we start with all 0's, feedback with always be 0, register will be stuck
@@ -197,16 +197,20 @@ void clockCycle(int *lfsr1_state_ptr, int *lfsr2_state_ptr){
   
   //lfsr using selected taps
   int lfsr2Bit = getFeedback(lfsr2_state, currentTaps, 31);
+
+  int outputBit = lfsr2Bit ^ lfsr1Bit;
   
   //ouput the values before shifting
-  printf("%5d |    %d     |  %s   |  ", cycles, lfsr1Bit, tapName);
-  //!!! change this to 31 when you update LFSR2 to 31 bits
-  printBinary(lfsr2_state, 9);
-  printf("  |    %d\n", lfsr2Bit);
+  //printf("%5d |    %d     |  %s   |  ", cycles, lfsr1Bit, tapName);
+  //printBinary(lfsr2_state, 31);
+  // deprecated line -> ////printf("  |    %d\n", lfsr2Bit);
+  //printf("  |    %d\n", outputBit);
 
-  fprintf(output, "%d", lfsr2Bit);
+
+  ////fprintf(outputFile, "%d", lfsr2Bit);
+  fprintf(outputFile, "%d", outputBit);
   if (cycles % 100 == 99){
-    fprintf(output, "\n");
+    fprintf(outputFile, "\n");
   }
   
   // shift and update the states
@@ -215,7 +219,8 @@ void clockCycle(int *lfsr1_state_ptr, int *lfsr2_state_ptr){
   // the OR combines the shifted state with the new bit
   // & 0x1FF- that is binary 111111111, this is here to ensure that if any bits shifted past the 9th, they are dropped, keeping 9 bits
   *lfsr1_state_ptr = ((lfsr1_state >> 1) | (lfsr1Bit << (9-1))) & 0b111111111;  //lfsr1 is 9 bits long
-  *lfsr2_state_ptr = ((lfsr2_state >> 1) | (lfsr2Bit << (31-1))) & 0b1111111111111111111111111111111; //lfsr2 is 31 bits long
+  ////*lfsr2_state_ptr = ((lfsr2_state >> 1) | (lfsr2Bit << (31-1))) & 0b1111111111111111111111111111111; //lfsr2 is 31 bits long
+  *lfsr2_state_ptr = ((lfsr2_state >> 1) | (outputBit << (31-1))) & 0b1111111111111111111111111111111; //lfsr2 is 31 bits long
 
   cycles ++;
 
