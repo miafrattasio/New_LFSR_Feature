@@ -175,7 +175,11 @@ int main() {
 
 
 
-
+// !!! Planned update:
+// pass three more parameters:
+// int lfsr1_gate
+// int lfsr2_gateA
+// int lfsr2_gateB
 void clockCycle(int *lfsr1_state_ptr, int *lfsr2_state_ptr){
 
   static int cycles = 0;
